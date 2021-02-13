@@ -48,10 +48,14 @@ table_fig = None
 pandas_options.display.float_format = '${:.2f}'.format
 info = ""
 battery_info = dbc.Alert("No data to show", color="danger")
+consumption_fuel_fig = None
+consumption_fuel_df = None
+consumption_fuel_fig_by_speed = None
+info_fuel = ""
 
 
 def get_figures(trips: List[Trip], charging: List[dict]):
-    global consumption_fig, consumption_df, trips_map, consumption_fig_by_speed, table_fig, info, battery_info
+    global consumption_fig, consumption_df, trips_map, consumption_fig_by_speed, table_fig, info, battery_info, consumption_fuel_fig, consumption_fuel_df, consumption_fuel_fig_by_speed, info_fuel
     lats = []
     lons = []
     names = []
@@ -84,6 +88,7 @@ def get_figures(trips: List[Trip], charging: List[dict]):
                  {'id': 'mileage', 'name': 'mileage', 'type': 'numeric', 'format': nb_format.symbol_suffix(" km")}],
         data=[tr.get_info() for tr in trips],
     )
+
     # consumption_fig
     consumption_df = DataFrame.from_records([tr.get_consumption() for tr in trips])
     consumption_fig = px.line(consumption_df, x="date", y="consumption", title='Consumption of the car')
@@ -101,6 +106,24 @@ def get_figures(trips: List[Trip], charging: List[dict]):
     consumption_fig_by_speed.update_layout(xaxis_title="average Speed km/h", yaxis_title="Consumption kWh/100Km")
     kw_per_km = float(consumption_df.mean(numeric_only=True))
     info = "Average consumption: {:.1f} kW/100km".format(kw_per_km)
+
+    # consumption_fuel_fig
+    consumption_fuel_df = DataFrame.from_records([tr.get_consumption_fuel() for tr in trips])
+    consumption_fuel_fig = px.line(consumption_fuel_df, x="date", y="consumption_fuel", title='Fuel consumption of the car')
+    consumption_fuel_fig.update_layout(yaxis_title="Consumption L/100Km")
+
+    consumption_fuel_df_by_speed = DataFrame.from_records(
+        [{"speed": tr.speed_average, "consumption_fuel": tr.consumption_fuel_km} for tr in trips])
+    consumption_fuel_fig_by_speed = px.histogram(consumption_fuel_df_by_speed, x="speed", y="consumption_fuel", histfunc="avg",
+                                            title="Consumption by speed")
+    consumption_fuel_fig_by_speed.update_traces(xbins_size=15)
+    consumption_fuel_fig_by_speed.update_layout(bargap=0.05)
+    consumption_fuel_fig_by_speed.add_trace(
+        go.Scatter(mode="markers", x=consumption_fuel_df_by_speed["speed"], y=consumption_fuel_df_by_speed["consumption_fuel"],
+                   name="Trips"))
+    consumption_fuel_fig_by_speed.update_layout(xaxis_title="average Speed km/h", yaxis_title="Consumption L/100Km")
+    L_per_km = float(consumption_fuel_df.mean(numeric_only=True))
+    info_fuel = "Average fuel consumption: {:.1f} L/100km".format(L_per_km)
 
     # charging
     charging_data = DataFrame.from_records(charging)

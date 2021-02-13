@@ -49,7 +49,7 @@ class Trip:
     def get_consumption_fuel(self):
         return {
             'date': self.start_at,
-            'consumption': self.consumption_fuel_km,
+            'consumption_fuel': self.consumption_fuel_km,
         }
 
     def to_geojson(self):

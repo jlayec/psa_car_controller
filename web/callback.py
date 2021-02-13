@@ -23,6 +23,9 @@ chargings = None
                    Output('consumption_fig', 'figure'),
                    Output('consumption_fig_by_speed', 'figure'),
                    Output('consumption', 'children'),
+                   Output('consumption_fuel_fig', 'figure'),
+                   Output('consumption_fuel_fig_by_speed', 'figure'),
+                   Output('consumption_fuel', 'children'),
                    Output('tab_trips', 'children'),
                    Output('tab_battery', 'children'),
                    Input('date-slider', 'value'))
@@ -36,7 +39,8 @@ def display_value(value):
     filtered_chargings = MyPSACC.get_chargings(min,max)
     figures.get_figures(filtered_trips,filtered_chargings)
     consumption = "Average consumption: {:.1f} kW/100km".format(float(figures.consumption_df.mean(numeric_only=True)))
-    return figures.trips_map, figures.consumption_fig, figures.consumption_fig_by_speed, consumption, figures.table_fig, figures.battery_info
+    consumption_fuel = "Average fuel consumption: {:.1f} L/100km".format(float(figures.consumption_fuel_df.mean(numeric_only=True)))
+    return figures.trips_map, figures.consumption_fig, figures.consumption_fig_by_speed, consumption, figures.consumption_fuel_fig, figures.consumption_fuel_fig_by_speed, consumption_fuel, figures.table_fig, figures.battery_info
 
 
 @app.route('/getvehicles')
@@ -144,7 +148,11 @@ try:
                     html.H2(id="consumption",
                             children=figures.info),
                     dcc.Graph(figure=figures.consumption_fig, id="consumption_fig"),
-                    dcc.Graph(figure=figures.consumption_fig_by_speed, id="consumption_fig_by_speed")
+                    dcc.Graph(figure=figures.consumption_fig_by_speed, id="consumption_fig_by_speed"),
+                    html.H2(id="consumption_fuel",
+                            children=figures.info_fuel),
+                    dcc.Graph(figure=figures.consumption_fuel_fig, id="consumption_fuel_fig"),
+                    dcc.Graph(figure=figures.consumption_fuel_fig_by_speed, id="consumption_fuel_fig_by_speed"),
                 ]),
                 dbc.Tab(label="Trips", tab_id="trips", id="tab_trips", children=[figures.table_fig]),
                 dbc.Tab(label="Battery", tab_id="battery", id="tab_battery", children=[figures.battery_info]),
