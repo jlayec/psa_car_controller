@@ -1,11 +1,13 @@
 FROM 	debian:buster-slim
 
-RUN	ls -l
+RUN	ls -la
 
 COPY	/ /
 
+RUN	ls -la
+
 RUN	apt-get update; \
-	apt-get install -y \
+	apt-get install -y --no-install-recommends \
 		python3 python3-pip \
 	; \
 	rm -rf /var/lib/apt/lists/*
