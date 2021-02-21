@@ -12,4 +12,4 @@ WORKDIR	psa
 
 EXPOSE	5000/tcp
 
-CMD	["python3","server.py -l 0.0.0.0 -r --remote-disable"]
+CMD	["python3","server.py","-l 0.0.0.0 -r --remote-disable"]
