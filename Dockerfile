@@ -2,7 +2,7 @@ FROM 	debian:buster-slim
 
 RUN	ls -la
 
-COPY	/ /
+COPY	/ /psa
 
 RUN	ls -la
 
