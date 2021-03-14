@@ -50,6 +50,26 @@ def get_vehicules():
     return jsonify(myp.getVIN())
 
 
+@app.route('/test')
+def test():
+    global min_date, max_date, min_millis, max_millis, step, marks
+    logger.debug(f"max_date={max_date} type={type(max_date)}")
+    min_date = trips[0].start_at
+    #max_date = trips[-1].start_at
+    max_date = datetime.now().astimezone(None)
+    min_millis = figures.unix_time_millis(min_date)
+    max_millis = figures.unix_time_millis(max_date)
+    step = (max_millis - min_millis) / 100
+    marks = figures.get_marks_from_start_end(min_date, max_date)
+    logger.debug(f"max_date={max_date} type={type(max_date)}")
+    return "ok"
+
+
+@app.route('/log')
+def log():
+    return app.response_class(open('activity.log').read(), mimetype='text/plain')
+
+
 @app.route('/get_vehicleinfo/<string:vin>')
 def get_vehicle_Info(vin):
     response = app.response_class(
