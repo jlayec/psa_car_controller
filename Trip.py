@@ -93,6 +93,9 @@ class Trips(list):
             if tr.consumption > 1.8:
                 res.append({"speed": tr.speed_average, "consumption_km": tr.consumption_km, "date": tr.start_at,
                             "consumption": tr.consumption})
+        if len(res) == 0:
+            res.append({"speed": 0, "consumption_km": 0, "date": 0,
+                        "consumption": 0})
         return res
 
     @staticmethod
